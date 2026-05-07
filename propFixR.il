@@ -55,7 +55,6 @@ if(abs(evalstring(dbFindProp(inst "rtot")~>value)-evalstring(rold))<epsilon then
 printf("[DONE] rtot=rold+/- 1m:  %L" list(inst~>name inst~>cellName dbFindProp(inst "m")~>value dbFindProp(inst "m")~>value dbFindProp(inst "rtot")~>value rold))
 else
 
-
 nbmax=10
 while(
 and(abs(evalstring(dbFindProp(inst "rtot")~>value)-evalstring(rold))>epsilon nbmax>0)
@@ -70,8 +69,9 @@ printf("FIX SERIES (INCREMENT) %L\n" list(inst~>name inst~>cellName dbFindProp(i
 );Paralell fix
 ;=> still bug, needs to put length calue to 1u sometimes.
 
-
+)
 ); adapt w and l when w i not correct.
 );foreach
-));end let defun
+)
+);end let defun
 

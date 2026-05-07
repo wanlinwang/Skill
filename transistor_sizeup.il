@@ -1,4 +1,4 @@
-;ineed('transistor_sizeup)
+;ineed('transistor_sizeup t)
 ineed('abInvokeCdfCallbacks) ;=> abInvokeInstCdfCallbacks
 
 ;; inst=css()
@@ -9,9 +9,13 @@ ineed('abInvokeCdfCallbacks) ;=> abInvokeInstCdfCallbacks
 ;; force=nil
 
 ;transistor_sizeup(list(css()) list("pe" "ne" "pel" "nel") 1.5 t)
+;transistor_sizeup(nil list("pe" "ne" "pel" "nel") 1.0 t) ;<= faking to do it
 
+;; inst=css()
+;; (abInvokeInstCdfCallbacks inst)
+;; (setq ldft "180n")
 
-defun(transistor_sizeup (@optional (insts nil) (filters list("pe" "ne" "pel" "nel")) (inc 1)(force nil))
+defun(transistor_sizeup (@optional (insts nil) (filters list("pe" "ne" "pel" "nel")) (inc 1)(force nil)(ldft "180n"))
 let((lold wold ratio)
 unless(insts insts=geGetWindowCellView()~>instances)
 when(filters insts=foreach(mapcan filter filters setof(inst insts inst~>cellName==filter)) )
@@ -23,7 +27,7 @@ when(
 (or dbFindProp(inst "transisorSizeup")~>value!="TRUE" force==t)
 dbCreateProp(inst "transisorSizeup" 'boolean t);<= to prevent double apply
 
-lold=dbFindProp(inst "l")~>value;=> "120.0n"
+lold=dbFindProp(inst "l")~>value||ldft;=> "120.0n"
 wold=dbFindProp(inst "w")~>value;=> "3u"
 ratio=evalstring(wold)/evalstring(lold);=> 25.0
 

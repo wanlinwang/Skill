@@ -130,6 +130,8 @@ system("echo $PWD/TOP.pdf")
 )
 
 printf("\nprettyPrintH() ;<== prints the HIERARCHY\n")
+printf("\nprettyPrint(nil \"Color PS\") ;<= print the current cellview with PS type\n")
+
 
 ;; # source ~/.mail_aliases                                #<= in ~/.muttrc
 ;; # alias moi e.bechetoille @ ipnl . in2p3 . fr (Ed BECH) #<= in ~/.mail_aliases
