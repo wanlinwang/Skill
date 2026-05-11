@@ -1,7 +1,10 @@
 ;ineed('moveLayoutPinsInst t)
-;;generateAllPins ;<= was creating pins
+;;generateAllPins ;<= was creating pins  
 ;<= i assume now in this scipt that the pins are allready create, so i do not need to create layers etc...
 ineed('(getInstTermPointLPP3 getInstTermPointLPP  textDisplay2label metalPin2pinDrawing bus2flat bBoxHeight isPointInBbox))
+
+;ineed('pinLppChange)
+;pinLppChange("MET2")
 
 ;; QUICK AND DIRTY JOB ...
 
@@ -12,8 +15,17 @@ unless(cv cv=geGetWindowCellView()) ;<= should be layout active view freshly ger
 ;; LIST OF PINS '((PIN1 LABEL) (PIN2 LABEL2)) to move
 rect=setof(c cv~>shapes c~>objType=="rect")
 labs=setof(c cv~>shapes c~>objType=="label")
-pairs=remove(nil foreach(mapcan r rect remove(nil foreach(mapcar lab labs when(isPointInBbox(lab~>xy r~>bBox) when( r~>layerName==lab~>layerName list(r lab)))))))
+labs~>theLabel
+rect~>pin~>name
+lab=car(labs)
+lab~>theLabel;=> "VSS"
+pairs=remove(nil foreach(mapcar lab labs rects=setof(rec rect rec~>pin~>name==lab~>theLabel) remove(nil foreach(mapcan rec rects when(isPointInBbox(lab~>xy rec~>bBox) list(rec lab))))))
+
+;pairs=remove(nil foreach(mapcan r rect remove(nil foreach(mapcar lab labs when(isPointInBbox(lab~>xy r~>bBox) when( r~>layerName==lab~>layerName list(r lab)))))))
 ;length(pairs);=> 13
+;pairs~>pin
+;=> ((db:0x3f868d1a nil) (db:0x3f868d1b nil) (db:0x3f868d20 nil) (db:0x3f868d24 nil) (nil nil) (nil nil))
+
 ppins=setof(p pairs car(p)~>pin) ;=> take only rectangle of type pin matching with label pair
 ;length(ppins);=> 11
 pins2move=remove(nil foreach(mapcan ppin ppins lpin=car(ppin) unless(dbFindProp(lpin  "dontmove") list(ppin)))) ;=> add dontmove property if you want to keep pin allready  placed.
@@ -24,6 +36,8 @@ unless(cvs printf("Hey dude, where is your schematic ? %L\n" list(cv~>libName cv
 
 ;; pinlab=nth(1 pins2move);=> (db:0x3f868c9a db:0x3f868c9b)
 ;; pinlab=nth(0 pins2move);=> (db:0x3f868c9a db:0x3f868c9b)
+
+printf("TOMOV : %L\n" list(pins2move length(pins2move)))
 
 foreach(mapcar pinlab pins2move
 Apin=car(pinlab);=> db:0x3f868c9e
@@ -69,8 +83,10 @@ dbMoveFig(Apin nil list(relativemovexy "R0"))
 printf("DONE \n" list(pn  bBox lpp dir))
 
 updatelpp=t
-when(updatelpp Apin~>lpp=lpp)
+when(updatelpp Apin~>lpp=lpp cadr(pinlab)~>layerName=car(lpp)) ; update of the label can be techno dependent (met pin) or (met TEXT) versus ("pin" "metal") ...
 );end when pin is connecter to an instance (netSet on VSS is not taken into account or global! net)
 );end foreach pins2move
 ));;<= end let and defun
 
+;css()~>??
+;=> (db:0x3f868c9f cellView db:0x457bd39a objType "label" prop nil bBox ((9.359 10.735) (19.171 12.735)) children nil groupMembers nil isAnyInst nil isShape t matchPoints nil net nil parent db:0x3f868c9e pin nil purpose "TEXT" textDisplays nil assocTextDisplays nil markers nil figGroup nil isUnshielded nil shieldedNet1 nil shieldedNet2 nil layerName "MET1" layerNum 13 lpp ("MET1" "TEXT") connRoutes nil routeStatus "normal" font "stick" height 2.0 isDrafted t isOverbar nil isVisible t justify "centerCenter" labelType "normalLabel" orient "R0" theLabel "OUT+1" xy (14.265 11.735) hasTextDisplay nil)
